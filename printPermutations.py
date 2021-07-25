@@ -1,3 +1,4 @@
+# O(n*n!) Note that there are n! permutations and it requires O(n) time to print a permutation.
 def swap(S, i, j):
     S[i], S[j] = S[j], S[i]
 def permutation(S, left, right):
