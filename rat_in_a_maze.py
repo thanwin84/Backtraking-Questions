@@ -1,4 +1,4 @@
-//time: O(4^(n*m)) and space: O(n*m)
+# time: O(4^(n*m)) and space: O(n*m)
 class Solution:
     def __init__ (self):
         self.result = []
