@@ -1,62 +1,40 @@
+// --------algorithm
+// minimum number of removal = size of string - number of valid pairs and characters
+// remove one parenthesis every time and check if rest of the string can form a valid parenthesis
 class Solution {
+    vector<string> valid_parenthesis;
+    unordered_map<string, bool> seen;
 public:
-    vector<string> output;
-    unordered_map<string, int> visited;
-    vector<string> removeInvalidParentheses(string s) {
-        int min_allowed = get_min(s);
-        solve(s, min_allowed);
-        return output;
-    }
-    void solve(string s, int allowed) {
-        visited[s] = 1;
-        if (is_valid(s)) {
-            if (visited[s] != 2) {
-                output.push_back(s);
-            }
-            visited[s] = 2;
-            return;
-        }
-        if (allowed == 0) {
-            return;
-        }
-        for (int k = 0; k < s.size(); k++) {
-            if (s[k] == '(' or s[k] == ')') {
-                string left = s.substr(0, k);
-                string right = s.substr(k + 1);
-                if (!visited.count(left + right)) {
-                    solve(left + right, allowed - 1);
-                }
-            }
-        }
-    }
-    int get_min(string s) {
+    int getMin(string s){
+        // all the non matching backets will remain in the stack
+        // and it will be also used to find the matching pair of bracket
         vector<char> stack;
-        int paired_parenthesis = 0;
-        int count_char = 0;
-        for (int i = 0; i < s.size(); i++) {
-            if (s[i] == '(') {
-                stack.push_back(s[i]);
-            }
-            else if (s[i] == ')') {
-                if (stack.size() > 0 and stack.back() == '(') {
+        // keep track of valid pairs
+        int valid_pairs = 0;
+        int chars = 0;
+        for (auto ch: s){
+            if (ch == '(') stack.push_back(ch);
+            else if (ch == ')'){
+                //  found a matching pair
+                if (stack.size() > 0 && stack.back() == '('){
+                    // pop the matching bracket
                     stack.pop_back();
-                    paired_parenthesis += 2;
+                    valid_pairs += 2;
                 }
             }
-            else {
-                count_char += 1;
-            }
+            else chars++;
+            
         }
-        return s.size() - count_char - paired_parenthesis;
+        return s.size() - valid_pairs - chars;
     }
-    bool is_valid(string s) {
+    bool isValid(string &s){
         vector<char> stack;
-        for (int i = 0; i < s.size(); i++) {
-            if (s[i] == '(') {
-                stack.push_back(s[i]);
-            }
-            else if (s[i] == ')') {
-                if (stack.size() > 0 and stack.back() == '(') {
+        for (auto ch: s){
+            if (ch == '(') stack.push_back(ch);
+            else if (ch == ')'){
+                //  found a matching pair
+                if (stack.size() > 0 && stack.back() == '('){
+                    // pop the matching bracket
                     stack.pop_back();
                 }
                 else {
@@ -64,9 +42,38 @@ public:
                 }
             }
         }
-        if (stack.size() > 0) {
-            return false;
+        return stack.size() == 0;
+
+    }
+    void solve(string s, int minRemoval){
+        seen[s] = true;
+        // if it is valid, save it
+        if (isValid(s)){
+            valid_parenthesis.push_back(s);
+            return;
         }
-        return true;
+        // it will make sure we only remove minimum parenthesis
+        if (minRemoval == 0){
+            return;
+        }
+        // removing one parenthesis every time
+        // and checking if rest string can form valid parenthesis
+        for (int k = 0; k < s.size(); k++){
+            if (s[k] == '(' || s[k] == ')'){
+                string left = s.substr(0, k);
+                // excluding the current character
+                string right = s.substr(k + 1);
+                // check if we've already solve the problem
+                if (!seen.count(left + right)){
+                    solve(left + right, minRemoval - 1);
+                }
+            }
+            
+        }
+    }
+    vector<string> removeInvalidParentheses(string s) {
+        int minRemove = getMin(s);
+        solve(s, minRemove);
+        return valid_parenthesis;
     }
 };
