@@ -43,7 +43,9 @@ public:
             permutations.push_back(permutation);
             return;
         }
+        // fix current(start) position and swap it with (start to permuation.size() - 1)
         for (int ind = start; ind < permutation.size();ind++){
+            
             swap(permutation, start, ind);
             solve(permutation, start + 1);
             swap(permutation, start, ind);
